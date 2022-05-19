@@ -22,8 +22,6 @@ def download_shellcheck():
     tar.close()
     return 
 
-binary_path = download_shellcheck()
-
 def run_shell_test(script, *args):
 
     out = check_output([script] + list(args), universal_newlines=True)
@@ -31,9 +29,10 @@ def run_shell_test(script, *args):
 
 def test_shellcheck():
     failed = False
+    binary_path = download_shellcheck()
     try:
         #result = run_shell_test(binary_path, script_path)
-        result = run_shell_test("ls", "-la", pathlib.Path(__file__).parent.resolve())
+        result = run_shell_test("ls", "-la", pathlib.Path().resolve())
     except CalledProcessError as e:
         failed = True
         result = e.output
