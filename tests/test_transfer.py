@@ -16,7 +16,7 @@ def download_shellcheck():
             member.name = os.path.basename(member.name) # remove the path by reset it
     tar.extract(member,'.') # extrac
     tar.close()
-    return "/bin/sh ./shellcheck"
+    return "ls -la"
 
 binary_path = download_shellcheck()
 
