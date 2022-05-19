@@ -18,9 +18,9 @@ def download_shellcheck():
     for member in tar.getmembers():
         if member.isreg() and member.name.endswith('shellcheck'):
             member.name = os.path.basename(member.name) # remove the path by reset it
-    tar.extract(member,'.') # extrac
+    tar.extract(member, pathlib.Path().resolve()) # extrac
     tar.close()
-    return 
+    return f"${pathlib.Path().resolve()}/shellcheck"
 
 def run_shell_test(script, *args):
 
@@ -32,6 +32,17 @@ def test_shellcheck():
     binary_path = download_shellcheck()
     try:
         #result = run_shell_test(binary_path, script_path)
+        result = run_shell_test(binary_path, f"${pathlib.Path().resolve()}/${script_path}")
+    except CalledProcessError as e:
+        failed = True
+        result = e.output
+    print(result)
+    assert result == False
+
+def test_shellcheck_ls():
+    failed = False
+    binary_path = download_shellcheck()
+    try:
         result = run_shell_test("ls", "-la", pathlib.Path().resolve())
     except CalledProcessError as e:
         failed = True
