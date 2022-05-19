@@ -16,20 +16,22 @@ def download_shellcheck():
             member.name = os.path.basename(member.name) # remove the path by reset it
     tar.extract(member,'.') # extrac
     tar.close()
-    return "ls -la"
+    return "./shellcheck"
 
 binary_path = download_shellcheck()
 
-def run_shell_test(script, arg1):
-    out = check_output([script, str(arg1)], universal_newlines=True)
-    return out.split("\n")[0]
+def run_shell_test(script, *args):
+
+    out = check_output([script] + list(args), universal_newlines=True)
+    return out
 
 def test_shellcheck():
     failed = False
     try:
-        result = run_shell_test(binary_path, script_path)
+        #result = run_shell_test(binary_path, script_path)
+        result = run_shell_test("ls", "-la")
     except CalledProcessError as e:
         failed = True
         result = e.output
     print(result)
-    assert failed == False
+    assert result == False
