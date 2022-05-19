@@ -1,5 +1,9 @@
 import requests, tarfile, os
 from subprocess import check_output, CalledProcessError
+import pathlib
+
+# pathlib.Path(__file__).parent.resolve()
+# pathlib.Path().resolve()
 
 script_path = "./transfer.sh"
 
@@ -16,7 +20,7 @@ def download_shellcheck():
             member.name = os.path.basename(member.name) # remove the path by reset it
     tar.extract(member,'.') # extrac
     tar.close()
-    return "./shellcheck"
+    return 
 
 binary_path = download_shellcheck()
 
@@ -29,7 +33,7 @@ def test_shellcheck():
     failed = False
     try:
         #result = run_shell_test(binary_path, script_path)
-        result = run_shell_test("ls", "-la")
+        result = run_shell_test("ls", "-la", pathlib.Path(__file__).parent.resolve())
     except CalledProcessError as e:
         failed = True
         result = e.output
