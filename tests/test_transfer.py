@@ -36,6 +36,17 @@ def run_shell_test(script, *args):
     out = check_output([script] + list(args), universal_newlines=True)
     return out
 
+def get_file(url):
+    response = requests.get(url)
+    return response.text
+
+def upload_file(url, path):
+
+    files = {'upload_file': open(path,'rb')}
+    response = requests.post(url, files=files)
+    
+    return response.content.decode('utf-8')
+
 def test_shellcheck():
     result = check_shellcheck(script_path)
     assert result == []
@@ -46,8 +57,15 @@ def test_upload():
     for line in result.splitlines():
         if line.startswith('Transfer File URL:'):
             url = line.replace('Transfer File URL: ', '')
-            response = requests.get(url)
+            downloaded_file = get_file(url)
             with open("tests/test.txt", encoding = 'utf-8') as f:
-                assert response.text == f.read()
+                assert downloaded_file == f.read()
 
+def test_download():
+
+    upload_file_url = upload_file("https://transfer.sh/", "tests/test.txt")
+    url = upload_file_url.split("https://transfer.sh/")[1].strip().split("/")
+    result = run_shell_test(script_path, "-d", "./test", url[0], url[1])
     
+    if "Success!" in result:
+        assert filecmp.cmp("tests/test.txt", "./test/test.txt") == True
