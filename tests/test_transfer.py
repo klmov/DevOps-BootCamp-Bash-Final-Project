@@ -1,26 +1,35 @@
-import requests, tarfile, os
+import requests
 from subprocess import check_output, CalledProcessError
-import pathlib
 
-# pathlib.Path(__file__).parent.resolve()
-# pathlib.Path().resolve()
+import json
+
+API_URL = "https://www.shellcheck.net/shellcheck.php"
+
+def check_shellcheck(file):
+
+    with open(f"./{file}", "r") as f:
+        script = f.readlines()
+        script_lines = ''.join(script)
+        issues = requests.post(
+            API_URL,
+            data=f'script={script_lines}',
+            headers={
+                'Accept': 'application/json, text/javascript, */*; q=0.01',
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            }
+        )
+
+    if issues.json():
+        for issue in issues.json():
+            print(f"Line {issue['line']}:")
+            print(f" SC{issue['code']} ({issue['level']}): {issue['message']}")
+        return False
+    else:
+        return True
+
+
 
 script_path = "./transfer.sh"
-
-def download_shellcheck():
-    link = "https://github.com/koalaman/shellcheck/releases/download/v0.8.0/shellcheck-v0.8.0.darwin.x86_64.tar.xz"
-
-    r = requests.get(link, allow_redirects=True)
-    fname = 'shellcheck-v0.8.0.darwin.x86_64.tar.xz'
-    open(fname, 'wb').write(r.content)
-    tar = tarfile.open(fname, "r:xz")
-
-    for member in tar.getmembers():
-        if member.isreg() and member.name.endswith('shellcheck'):
-            member.name = os.path.basename(member.name) # remove the path by reset it
-    tar.extract(member, pathlib.Path().resolve()) # extrac
-    tar.close()
-    return f"${pathlib.Path().resolve()}/shellcheck"
 
 def run_shell_test(script, *args):
 
@@ -28,24 +37,5 @@ def run_shell_test(script, *args):
     return out
 
 def test_shellcheck():
-    failed = False
-    binary_path = download_shellcheck()
-    try:
-        #result = run_shell_test(binary_path, script_path)
-        result = run_shell_test(binary_path, f"${pathlib.Path().resolve()}/${script_path}")
-    except CalledProcessError as e:
-        failed = True
-        result = e.output
-    print(result)
-    assert result == False
+    assert check_shellcheck(script_path) == True
 
-def test_shellcheck_ls():
-    failed = False
-    binary_path = download_shellcheck()
-    try:
-        result = run_shell_test("ls", "-la", pathlib.Path().resolve())
-    except CalledProcessError as e:
-        failed = True
-        result = e.output
-    print(result)
-    assert result == False
