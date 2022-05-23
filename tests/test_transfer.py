@@ -18,7 +18,7 @@ def check_shellcheck(file):
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             }
         )
-    result = []
+    result = [' ']
     if issues.json():
         for issue in issues.json():
             result.append(f"Line {issue['line']}:")
