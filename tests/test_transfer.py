@@ -1,7 +1,7 @@
 import requests
 from subprocess import check_output, CalledProcessError
 
-import json
+import json, filecmp
 
 API_URL = "https://www.shellcheck.net/shellcheck.php"
 
@@ -29,7 +29,7 @@ def check_shellcheck(file):
 
 
 
-script_path = "./transfer.sh"
+script_path = "./transfer_work.sh"
 
 def run_shell_test(script, *args):
 
@@ -39,3 +39,15 @@ def run_shell_test(script, *args):
 def test_shellcheck():
     result = check_shellcheck(script_path)
     assert result == []
+
+def test_upload():
+    result = run_shell_test(script_path, "tests/test.txt", "tests/test.txt")
+
+    for line in result.splitlines():
+        if line.startswith('Transfer File URL:'):
+            url = line.replace('Transfer File URL: ', '')
+            response = requests.get(url)
+            with open("tests/test.txt", encoding = 'utf-8') as f:
+                assert response.text == f.read()
+
+    

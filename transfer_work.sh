@@ -10,7 +10,8 @@ httpDownload()
 
 singleDownload()
 {
-  if [[ ! -d $1 ]];then { echo "Directory doesn't exist, creating it now..."; mkdir -p "$1";};fi
+  if [[ ! -d $1 ]];then { 
+    echo "Directory doesn't exist, creating it now..."; mkdir -p "$1";};fi
   tempOutputPath=$1
   if [ -f "$tempOutputPath/$3" ];then
     echo -n "File aleady exists at $tempOutputPath/$3, do you want to delete it? [Y/n] "
@@ -50,7 +51,7 @@ singleUpload()
   httpSingleUpload "$filePath" "$tempFileName"
 }
 
-while getopts ":d" opt; do
+while getopts "vhd:" opt; do
   case "$opt" in
     \?) echo "Invalid option: -$OPTARG" >&2
       exit 1
@@ -62,6 +63,10 @@ while getopts ":d" opt; do
       inputID=$(echo "$*" | sed s/-d//g | sed s/-o//g | cut -d " " -f 3)
       inputFileName=$(echo "$*" | sed s/-d//g | sed s/-o//g | cut -d " " -f 4)
     ;;
+    h)
+    ;;
+    v)
+    ;;
     :)  echo "Option -$OPTARG requires an argument." >&2
       exit 1
     ;;
@@ -71,21 +76,25 @@ done
 if [[ $# == "0" ]]; then
   usage
   exit 0
-elif [[ $# == "1" ]];then
-  if [[ $1 == "help" ]]; then
-    usage
+elif [[ $# -ge "1" ]];then
+  if [[ $1 == "help" ]] || [[ $1 == "-h" ]]; then
+    echo "Usage:"
+    exit 0
+  elif [[ $1 == "-d" ]]; then
+    singleDownload "$inputFilePath" "$inputID" "$inputFileName" || exit 1
+    exit 0
+  elif [[ $1 == "-v" ]]; then
+    echo $currentVersion
     exit 0
   elif [ -f "$1" ];then
-    singleUpload "$1" || exit 1
-    printUploadResponse
+    for arg in "$@"
+    do
+      singleUpload "$arg" || exit 1
+      printUploadResponse
+    done
     exit 0
   else
     echo "Error: invalid filepath"
     exit 1
-  fi
-else
-  if $down ;then
-    singleDownload "$inputFilePath" "$inputID" "$inputFileName" || exit 1
-    exit 0
   fi
 fi
