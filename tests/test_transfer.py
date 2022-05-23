@@ -18,12 +18,12 @@ def check_shellcheck(file):
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             }
         )
-
+    result = []
     if issues.json():
         for issue in issues.json():
-            print(f"Line {issue['line']}:")
-            print(f" SC{issue['code']} ({issue['level']}): {issue['message']}")
-        return issues.json()
+            result.append(f"Line {issue['line']}:")
+            result.append(f"SC{issue['code']} ({issue['level']}): {issue['message']}")
+        return result
     else:
         return True
 
@@ -38,4 +38,4 @@ def run_shell_test(script, *args):
 
 def test_shellcheck():
     result = check_shellcheck(script_path)
-    assert result == True
+    assert result == []
