@@ -25,7 +25,7 @@ def check_shellcheck(file):
             result.append(f"SC{issue['code']} ({issue['level']}): {issue['message']}")
         return result
     else:
-        return True
+        return issues.json()
 
 
 
