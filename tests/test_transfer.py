@@ -29,7 +29,7 @@ def check_shellcheck(file):
 
 
 
-script_path = "./transfer.sh"
+script_path = "./transfer_clear.sh"
 
 def run_shell_test(script, *args):
 
