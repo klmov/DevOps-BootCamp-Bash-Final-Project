@@ -23,7 +23,7 @@ def check_shellcheck(file):
         for issue in issues.json():
             print(f"Line {issue['line']}:")
             print(f" SC{issue['code']} ({issue['level']}): {issue['message']}")
-        return False
+        return issues.json()
     else:
         return True
 
@@ -37,4 +37,5 @@ def run_shell_test(script, *args):
     return out
 
 def test_shellcheck():
-    assert check_shellcheck(script_path) == True
+    result = check_shellcheck(script_path)
+    assert result == True
