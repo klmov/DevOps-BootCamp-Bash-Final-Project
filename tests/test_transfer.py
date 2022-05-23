@@ -38,4 +38,3 @@ def run_shell_test(script, *args):
 
 def test_shellcheck():
     assert check_shellcheck(script_path) == True
-
