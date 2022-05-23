@@ -7,3 +7,7 @@
 #             "Comparing Foo instances:",
 #             "   vals: {} != {}".format(left.val, right.val),
 #         ]
+
+def pytest_assertrepr_compare(op, left, right):
+    if op == '==':
+        return left
