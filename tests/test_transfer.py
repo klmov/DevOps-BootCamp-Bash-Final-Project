@@ -47,7 +47,22 @@ def upload_file(url, path):
     
     return response.content.decode('utf-8')
 
-def test_upload():
+def test_shellcheck():
+    result = check_shellcheck(script_path)
+    assert result == []
+
+def test_upload_one_file():
+    result = run_shell_test(script_path, "tests/test.txt")
+
+    for line in result.splitlines():
+        if line.startswith('Transfer File URL:'):
+            url = line.replace('Transfer File URL: ', '')
+            downloaded_file = get_file(url)
+            with open("tests/test.txt", encoding = 'utf-8') as f:
+                assert downloaded_file == f.read()
+
+def test_upload_two_files():
+
     result = run_shell_test(script_path, "tests/test.txt", "tests/test.txt")
 
     for line in result.splitlines():
