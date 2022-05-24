@@ -47,10 +47,6 @@ def upload_file(url, path):
     
     return response.content.decode('utf-8')
 
-def test_shellcheck():
-    result = check_shellcheck(script_path)
-    assert result == []
-
 def test_upload():
     result = run_shell_test(script_path, "tests/test.txt", "tests/test.txt")
 
@@ -69,3 +65,23 @@ def test_download():
     
     if "Success!" in result:
         assert filecmp.cmp("tests/test.txt", "./test/test.txt") == True
+
+def test_help():
+    check = False
+    result = run_shell_test(script_path, "-h")
+
+    if "Usage:" in result:
+        check = True
+    assert check == True
+
+def test_version():
+    check = False
+    result = run_shell_test(script_path, "-v")
+
+    if "1.23.0" in result:
+        check = True
+    assert check == True
+
+def test_shellcheck():
+    result = check_shellcheck(script_path)
+    assert result == []
