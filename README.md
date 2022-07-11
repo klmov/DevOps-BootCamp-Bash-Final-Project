@@ -1,4 +1,4 @@
-# DevOps...
+# DevOps BootCamp: Bash Final Project
 
 ## Task
 
